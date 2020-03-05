@@ -13,7 +13,14 @@ async function getUserData (user){
    return snapshot.val();
 };
 
+async function getProductData(){
+    var snapshot = await firebase.database().ref('products/').once('value');
+    console.log(snapshot.val());
+    return snapshot.val();
+ };
+
 
 export{
-    getUserData
+    getUserData,
+    getProductData
 }

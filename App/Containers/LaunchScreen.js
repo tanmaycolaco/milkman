@@ -28,6 +28,10 @@ export default class LaunchScreen extends Component {
     //   this.props.navigation.navigate('RegistrationScreen')
     // }
   }
+  
+  static navigationOptions = {
+    header: null
+}
 
   render() {  
     async function loginUser(state,props) {
@@ -41,7 +45,7 @@ export default class LaunchScreen extends Component {
        }
       let user = await getUserData(state.username)
       if(user != null && state.password == user.password){
-        props.navigation.navigate('RegistrationScreen')
+        props.navigation.navigate('ProductScreen')
         await storeData('user',user);
         return;
       }
