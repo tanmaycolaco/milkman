@@ -61,3 +61,5 @@ buck-out/
 # Misc
 #
 .env
+android/app/google-services.json
+App/Config/FirebaseConfig.json
