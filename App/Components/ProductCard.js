@@ -15,7 +15,6 @@ export default class ProductCard extends Component {
   // static defaultProps = {
   //   someSetting: false
   // }
-
   render() {
     return (
       <Card
@@ -26,8 +25,9 @@ export default class ProductCard extends Component {
         </Text>
         <Button
           icon={<Icon name='add' color='#ffffff' />}
-          buttonStyle={{ borderRadius:5, marginLeft: 0, marginRight: 5, marginBottom: 0}}
-          title={'Add '+ this.props.price}/>
+          buttonStyle={{ borderRadius:5, marginLeft: 0, marginRight:5, marginBottom: 0}}
+          title={'Add '+ this.props.price}
+          onPress={() => this.props.onPressFunction()}/>
       </Card>
     )
   }

@@ -18,25 +18,41 @@ class ProductScreen extends Component {
 
     this.state = {
       products: [],
+      totalCount: 0
     }
+
+    this.updateCart = this.updateCart.bind(this);
   }
 
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
+    return {
     title: "Products",
     headerRight: (
       <TouchableOpacity onPress={() => action()}>
+        <Text style={{marginLeft:10,fontSize:18,marginTop:2}}>{params.totalCount}</Text>
         <Icon
           name='shopping-cart'
           type='font-awesome'
-          size={35}
+          size={34}
           iconStyle={{marginRight:15}}/>
       </TouchableOpacity>
-    )
+    )}
   }
 
   async componentDidMount() {
      let products = await getProductData();
      this.setState({products:products});
+     this.props.navigation.setParams({
+      totalCount: 0
+    });
+  }
+
+  updateCart(){
+    this.setState({totalCount:this.state.totalCount +1})
+    this.props.navigation.setParams({
+      totalCount: this.state.totalCount
+    });
   }
 
   render() {
@@ -44,7 +60,7 @@ class ProductScreen extends Component {
       <View style={styles.container}>
         <FlatList
           data={this.state.products}
-          renderItem={({item}) => <ProductCard title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
+          renderItem={({item}) => <ProductCard onPressFunction={this.updateCart} title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
         />
       </View>
     )

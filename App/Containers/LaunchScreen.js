@@ -22,11 +22,11 @@ export default class LaunchScreen extends Component {
   }
 
   async componentDidMount() {
-    // let user = await retrieveData("user");
-    // if(user != null){
-    //   Toast.show(JSON.stringify(user));
-    //   this.props.navigation.navigate('RegistrationScreen')
-    // }
+    let user = await retrieveData("user");
+    if(user != null){
+      await storeData('user',user);
+      this.props.navigation.navigate('MainScreen')
+    }
   }
   
   static navigationOptions = {

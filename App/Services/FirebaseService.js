@@ -9,13 +9,11 @@ if (!firebase.apps.length) {
 
 async function getUserData (user){
    var snapshot = await firebase.database().ref('users/'+user).once('value');
-   console.log(snapshot.val());
    return snapshot.val();
 };
 
 async function getProductData(){
     var snapshot = await firebase.database().ref('products/').once('value');
-    console.log(snapshot.val());
     return snapshot.val();
  };
 
