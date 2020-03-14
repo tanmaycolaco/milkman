@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, KeyboardAvoidingView, View, Image,TouchableOpacity,FlatList } from 'react-native'
-import { Button, Icon, Card } from 'react-native-elements';
+import {  View,FlatList } from 'react-native'
+import {Overlay } from 'react-native-elements';
 import { connect } from 'react-redux'
-import { Images } from '../Themes'
+import {retrieveData} from '../Services/AsyncStorageService'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/ProductScreenStyle'
 import ProductCard from '../Components/ProductCard'
-import {getProductData} from '../Services/FirebaseService'
+import {getProductData,getOrders,addOrder} from '../Services/FirebaseService'
 
 class ProductScreen extends Component {
 
@@ -18,41 +18,36 @@ class ProductScreen extends Component {
 
     this.state = {
       products: [],
-      totalCount: 0
+      user:''
     }
 
-    this.updateCart = this.updateCart.bind(this);
+    this.orderProduct = this.orderProduct.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     return {
-    title: "Products",
-    headerRight: (
-      <TouchableOpacity onPress={() => action()}>
-        <Text style={{marginLeft:10,fontSize:18,marginTop:2}}>{params.totalCount}</Text>
-        <Icon
-          name='shopping-cart'
-          type='font-awesome'
-          size={34}
-          iconStyle={{marginRight:15}}/>
-      </TouchableOpacity>
-    )}
+    title: "Products"
+  }
   }
 
   async componentDidMount() {
      let products = await getProductData();
-     this.setState({products:products});
+     let user = await retrieveData("user");
+     this.setState({products:products,user:user});
      this.props.navigation.setParams({
       totalCount: 0
     });
   }
 
-  updateCart(){
-    this.setState({totalCount:this.state.totalCount +1})
-    this.props.navigation.setParams({
-      totalCount: this.state.totalCount
-    });
+  async orderProduct(product){
+    let orders = await getOrders(this.state.user.username);
+    console.log(orders);
+    if(orders == null){
+      orders = new Array();
+    }
+    orders.push({orderTime:new Date(),productId:product.id})
+    await addOrder(this.state.user.username,orders);
   }
 
   render() {
@@ -60,21 +55,11 @@ class ProductScreen extends Component {
       <View style={styles.container}>
         <FlatList
           data={this.state.products}
-          renderItem={({item}) => <ProductCard onPressFunction={this.updateCart} title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
+          renderItem={({item}) => <ProductCard onPressFunction={this.orderProduct} product={item} title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
         />
       </View>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductScreen)
+export default connect()(ProductScreen)

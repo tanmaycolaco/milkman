@@ -27,7 +27,7 @@ export default class ProductCard extends Component {
           icon={<Icon name='add' color='#ffffff' />}
           buttonStyle={{ borderRadius:5, marginLeft: 0, marginRight:5, marginBottom: 0}}
           title={'Add '+ this.props.price}
-          onPress={() => this.props.onPressFunction()}/>
+          onPress={() => this.props.onPressFunction(this.props.product)}/>
       </Card>
     )
   }

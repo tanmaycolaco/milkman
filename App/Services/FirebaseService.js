@@ -17,8 +17,23 @@ async function getProductData(){
     return snapshot.val();
  };
 
+ async function addOrder(username,orders){
+     try{
+        var snapshot = await firebase.database().ref('users/'+username+"/orders").set(orders);
+     }catch(e){
+         console.log(e)
+     }
+ }
+
+ async function getOrders(username){
+    var snapshot = await firebase.database().ref('users/'+username+'/orders').once('value');
+    return snapshot.val();
+}
+
 
 export{
     getUserData,
-    getProductData
+    getProductData,
+    getOrders,
+    addOrder
 }

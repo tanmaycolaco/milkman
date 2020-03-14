@@ -1,4 +1,5 @@
 import { createAppContainer } from 'react-navigation'
+import OrderScreen from '../Containers/OrderScreen'
 import MainScreen from '../Containers/MainScreen'
 import ProductScreen from '../Containers/ProductScreen'
 import RegistrationScreen from '../Containers/RegistrationScreen'
@@ -9,6 +10,7 @@ import styles from './Styles/NavigationStyles'
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
+  OrderScreen: { screen: OrderScreen },
   MainScreen: { screen: MainScreen },
   ProductScreen: { screen: ProductScreen},
   RegistrationScreen: { screen: RegistrationScreen },

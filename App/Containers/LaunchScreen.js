@@ -25,7 +25,7 @@ export default class LaunchScreen extends Component {
     let user = await retrieveData("user");
     if(user != null){
       await storeData('user',user);
-      this.props.navigation.navigate('MainScreen')
+      this.props.navigation.navigate('OrderScreen')
     }
   }
   
@@ -46,6 +46,7 @@ export default class LaunchScreen extends Component {
       let user = await getUserData(state.username)
       if(user != null && state.password == user.password){
         props.navigation.navigate('ProductScreen')
+        user.username = state.username;
         await storeData('user',user);
         return;
       }
