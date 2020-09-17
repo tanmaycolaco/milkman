@@ -5,16 +5,6 @@ import { Button, Icon,Card } from 'react-native-elements';
 import styles from './Styles/ProductCardStyle'
 
 export default class ProductCard extends Component {
-  // Prop type warnings
-  // static propTypes = {
-  //   someProperty: PropTypes.object,
-  //   someSetting: PropTypes.bool.isRequired,
-  // }
-  
-  // Defaults for props
-  // static defaultProps = {
-  //   someSetting: false
-  // }
   render() {
     return (
       <Card

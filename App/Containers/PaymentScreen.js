@@ -68,7 +68,8 @@ class PaymentScreen extends Component {
       subscriptionStartDate : subscriptionStartDate.getTime(),
       subscriptionEndDate : subscriptionEndDate.getTime(),
       quantity: this.state.quantity,
-      orderAmount : this.state.orderAmount 
+      orderAmount : this.state.orderAmount,
+      isActive: true
     }
     orders.push(order)
     await addOrder(this.state.user.username,orders);

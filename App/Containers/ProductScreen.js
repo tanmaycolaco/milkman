@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import {  View,FlatList } from 'react-native'
-import {Overlay } from 'react-native-elements';
+import {  View,FlatList,TouchableOpacity } from 'react-native'
+import {Overlay,Image, Icon} from 'react-native-elements';
 import { connect } from 'react-redux'
 import {retrieveData} from '../Services/AsyncStorageService'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -22,13 +22,24 @@ class ProductScreen extends Component {
     }
 
     this.navigateToOrderScreen = this.navigateToOrderScreen.bind(this);
+    this.navigateToOrderHistoryScreen = this.navigateToOrderHistoryScreen.bind(this);
   }
-
+  
   static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
     return {
-    title: "Products"
-  }
+      title: "Products",
+      headerRight: (
+        <TouchableOpacity onPress={() => navigation.navigate('OrderHistoryScreen')}>
+          <Icon
+            name='history'
+            type='font-awesome'
+            size={25}
+            color='#517fa4'
+            iconStyle={{marginRight:15}}/>
+        </TouchableOpacity>
+      )
+    }
   }
 
   async componentDidMount() {
@@ -42,6 +53,10 @@ class ProductScreen extends Component {
 
   navigateToOrderScreen(product){
     this.props.navigation.navigate('OrderScreen', {product:product})
+  }
+
+  navigateToOrderHistoryScreen(){
+    this.props.navigation.navigate('OrderHistoryScreen')
   }
 
   render() {
