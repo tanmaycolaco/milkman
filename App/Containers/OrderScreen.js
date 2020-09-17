@@ -56,6 +56,8 @@ class OrderScreen extends Component {
     }
 
     this.selectSubscriptionPlan = this.selectSubscriptionPlan.bind(this);
+
+    this.navigateToPaymentScreen = this.navigateToPaymentScreen.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -73,7 +75,7 @@ class OrderScreen extends Component {
  }
 
   selectSubscriptionPlan(subscriptionType){
-      var subscriptionMode = this.state.subscriptionMode;
+    var subscriptionMode = this.state.subscriptionMode;
       for(var i=0 ; i < subscriptionMode.length ; i++){
           if(subscriptionMode[i].subscriptionType == subscriptionType){
               subscriptionMode[i].isSelected = true
@@ -93,6 +95,17 @@ class OrderScreen extends Component {
     }
     orders.push({orderTime:new Date(),productId:product.id})
     await addOrder(this.state.user.username,orders);
+  }
+
+  navigateToPaymentScreen(){
+    var selectedSubscriptionMode;
+    for(let subscriptionMode of this.state.subscriptionMode){
+          if(subscriptionMode.isSelected){
+            selectedSubscriptionMode = subscriptionMode;
+            break;
+          }
+    }
+    this.props.navigation.navigate('PaymentScreen', {selectedProduct:this.state.selectedProduct,quantity:this.state.quantity, subscriptionMode: selectedSubscriptionMode });
   }
 
   render () {
@@ -201,7 +214,7 @@ class OrderScreen extends Component {
                 height:60,
                 backgroundColor:'#F44336'
               }}
-              onPress={() => loginUser(this.state,this.props)}
+              onPress={() => this.navigateToPaymentScreen()}
               title="Confirm Order"
             />
 

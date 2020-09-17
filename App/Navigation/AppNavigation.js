@@ -1,4 +1,5 @@
 import { createAppContainer } from 'react-navigation'
+import PaymentScreen from '../Containers/PaymentScreen'
 import OrderScreen from '../Containers/OrderScreen'
 import MainScreen from '../Containers/MainScreen'
 import ProductScreen from '../Containers/ProductScreen'
@@ -10,6 +11,7 @@ import styles from './Styles/NavigationStyles'
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
+  PaymentScreen: { screen: PaymentScreen },
   OrderScreen: { screen: OrderScreen },
   MainScreen: { screen: MainScreen },
   ProductScreen: { screen: ProductScreen},
