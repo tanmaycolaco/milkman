@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import Toast from 'react-native-simple-toast';
 import {getOrders,addOrder} from '../Services/FirebaseService'
 import {retrieveData} from '../Services/AsyncStorageService'
+import UUIDGenerator from 'react-native-uuid-generator';
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -29,6 +30,7 @@ class PaymentScreen extends Component {
       overlayVisible : false,
       subscriptionStartDate:"",
       subscriptionEndDate:"",
+      orderId:""
     }
     this.setState({'orderAmount' : (this.state.subscriptionMode.days*this.state.quantity*this.state.selectedProduct.price)-((this.state.subscriptionMode.days*this.state.quantity*this.state.selectedProduct.price *this.state.subscriptionMode.discountRate)/100)})
     this.orderProduct = this.orderProduct.bind(this);
@@ -57,8 +59,10 @@ class PaymentScreen extends Component {
     var subscriptionEndDate = new Date(orderDate);
     subscriptionStartDate.setDate(orderDate.getDate()+1);
     subscriptionEndDate.setDate(orderDate.getDate()+this.state.subscriptionMode.days);
+    var orderId =  await UUIDGenerator.getRandomUUID()
 
     var order = {
+      orderId: orderId,
       orderTime:new Date(),
       productId:this.state.selectedProduct.id,
       subscriptionStartDate : subscriptionStartDate.getTime(),
@@ -68,7 +72,7 @@ class PaymentScreen extends Component {
     }
     orders.push(order)
     await addOrder(this.state.user.username,orders);
-    this.setState({subscriptionStartDate:subscriptionStartDate.toDateString(),subscriptionEndDate:subscriptionEndDate.toDateString(),overlayVisible:true })
+    this.setState({subscriptionStartDate:subscriptionStartDate.toDateString(),subscriptionEndDate:subscriptionEndDate.toDateString(),overlayVisible:true,orderId:orderId })
   }
 
   navigateToProdctScreen(){
@@ -81,10 +85,13 @@ class PaymentScreen extends Component {
         <KeyboardAvoidingView behavior='position'>
           <Overlay isVisible={this.state.overlayVisible} style={{borderRadius:10}}>
             <View style={{marginLeft:"5%", marginTop:"5%"}}>
-    <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Congratulations Subscription Started For {this.state.selectedProduct.title}</Text>
+              <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Congratulations Subscription Started For {this.state.selectedProduct.title} with id {this.state.orderId}</Text>
+            </View>
+            <View style={{marginLeft:"5%", marginTop:"5%"}}>
+                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Your subscription duration is from  {this.state.subscriptionStartDate} to {this.state.subscriptionEndDate} </Text>
             </View>
             <View style={{marginLeft:"5%", marginTop:"5%", marginBottom: '20%'}}>
-                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Your subscription duration is from  {this.state.subscriptionStartDate} to {this.state.subscriptionEndDate} </Text>
+                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Payment for your subscription is <Text style={{fontWeight:"bold"}}>{'\u20B9'}{this.state.orderAmount}</Text> will be collected during your first delivery on {this.state.subscriptionStartDate} </Text>
             </View>
             <Button
               icon={{
