@@ -21,7 +21,7 @@ class ProductScreen extends Component {
       user:''
     }
 
-    this.orderProduct = this.orderProduct.bind(this);
+    this.navigateToOrderScreen = this.navigateToOrderScreen.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -40,14 +40,8 @@ class ProductScreen extends Component {
     });
   }
 
-  async orderProduct(product){
-    let orders = await getOrders(this.state.user.username);
-    console.log(orders);
-    if(orders == null){
-      orders = new Array();
-    }
-    orders.push({orderTime:new Date(),productId:product.id})
-    await addOrder(this.state.user.username,orders);
+  navigateToOrderScreen(product){
+    this.props.navigation.navigate('OrderScreen', {product:product})
   }
 
   render() {
@@ -55,7 +49,7 @@ class ProductScreen extends Component {
       <View style={styles.container}>
         <FlatList
           data={this.state.products}
-          renderItem={({item}) => <ProductCard onPressFunction={this.orderProduct} product={item} title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
+          renderItem={({item}) => <ProductCard onPressFunction={this.navigateToOrderScreen} product={item} title={item.title} imageUrl={item.image} price={item.price} text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacinia urna semper arcu convallis"}/>}
         />
       </View>
     )

@@ -3,12 +3,9 @@ import { ScrollView, Text, View,FlatList } from 'react-native'
 import {Card,Image,CheckBox,Button } from 'react-native-elements';
 import { connect } from 'react-redux'
 import NumericInput from 'react-native-numeric-input'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
-
-// Styles
 import styles from './Styles/OrderScreenStyle'
-import { forEach } from 'ramda';
+import {getOrders,addOrder} from '../Services/FirebaseService'
+import {retrieveData} from '../Services/AsyncStorageService'
 
 class OrderScreen extends Component {
 
@@ -54,7 +51,8 @@ class OrderScreen extends Component {
         subscriptionText:"Yearly (365 Days)",
         isSelected:true
       },
-      quantity:1
+      quantity:1,
+      selectedProduct:this.props.navigation.getParam("product")   
     }
 
     this.selectSubscriptionPlan = this.selectSubscriptionPlan.bind(this);
@@ -65,6 +63,14 @@ class OrderScreen extends Component {
       title: "Order Summary"
     }
   }
+
+  async componentDidMount() {
+    let user = await retrieveData("user");
+    this.setState({user:user});
+    this.props.navigation.setParams({
+     totalCount: 0
+   });
+ }
 
   selectSubscriptionPlan(subscriptionType){
       var subscriptionMode = this.state.subscriptionMode;
@@ -79,18 +85,30 @@ class OrderScreen extends Component {
       this.setState({subscriptionMode:subscriptionMode});
   }
 
+  async orderProduct(product){
+    let orders = await getOrders(this.state.user.username);
+    console.log(orders);
+    if(orders == null){
+      orders = new Array();
+    }
+    orders.push({orderTime:new Date(),productId:product.id})
+    await addOrder(this.state.user.username,orders);
+  }
+
   render () {
     return (
       <ScrollView style={styles.container}>
         <View style={{borderWidth:2,marginTop:'5%',borderColor:'#eeeeee'}}>
           <View style={{marginLeft:'5%',flex: 1, flexDirection: 'row',marginTop:20}}>
-            <Image
-            source={{uri:"https://restaurantindia.s3.ap-south-1.amazonaws.com/s3fs-public/news13741.jpg"}} 
-            style={{width: 100, height: 100, marginBottom:10, marginTop:10}} resizeMode="stretch"/>
+            <View>
+              <Image
+              source={{uri:this.state.selectedProduct.image}} 
+              style={{width: 100, height: 100, marginBottom:10, marginTop:10}} resizeMode="stretch"/>
+            </View>
             <View style={{}}>
               <Text 
                 style={{fontSize:20, marginLeft:"25%", marginBottom:"2%", fontFamily: 'sans-serif',color:"black" }} >
-                Product Name
+                {this.state.selectedProduct.title}
               </Text>
               <NumericInput containerStyle={{marginLeft:"25%",marginTop:"5%"}}
               onChange={value => this.setState({quantity:value})} value={this.state.quantity} minValue={1} />
@@ -127,7 +145,7 @@ class OrderScreen extends Component {
             <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>Price</Text>
           </View>
           <View style={{marginLeft:"40%"}}>
-            <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>{'\u20B9'} 300</Text>
+            <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>{'\u20B9'} {this.state.selectedProduct.price}</Text>
           </View>
         </View>
 
@@ -136,7 +154,7 @@ class OrderScreen extends Component {
             <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>Quantity</Text>
           </View>
           <View style={{marginLeft:"40%"}}>
-          <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>{this.state.quantity}</Text>
+          <Text style={{fontFamily: 'sans-serif',marginLeft:"1%",color:"#424242",fontSize:16}}>{this.state.quantity}</Text>
           </View>
         </View>
 
@@ -164,7 +182,7 @@ class OrderScreen extends Component {
           </View>
           <View style={{marginLeft:"27%",marginTop:'3%'}}>
           <Text style={{fontFamily: 'sans-serif',marginLeft:"5%",color:"#424242",fontSize:16}}>{'\u20B9'} 
-          {(this.state.selectedsubscriptionMode.days*this.state.quantity*300)-((this.state.selectedsubscriptionMode.days*this.state.quantity*300 *this.state.selectedsubscriptionMode.discountRate)/100)}</Text>
+          {(this.state.selectedsubscriptionMode.days*this.state.quantity*this.state.selectedProduct.price)-((this.state.selectedsubscriptionMode.days*this.state.quantity*this.state.selectedProduct.price *this.state.selectedsubscriptionMode.discountRate)/100)}</Text>
           </View>
         </View>
 

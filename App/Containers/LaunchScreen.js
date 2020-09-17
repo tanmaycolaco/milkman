@@ -25,7 +25,7 @@ export default class LaunchScreen extends Component {
     let user = await retrieveData("user");
     if(user != null){
       await storeData('user',user);
-      this.props.navigation.navigate('OrderScreen')
+      this.props.navigation.navigate('ProductScreen')
     }
   }
   
