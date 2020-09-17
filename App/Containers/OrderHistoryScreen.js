@@ -20,7 +20,8 @@ class OrderHistoryScreen extends Component {
     this.state = {
       products: [],
       user:'',
-      orderHistorys:[]
+      orderHistorys:[],
+      orders:[]
     }
 
     this.cancelOrder = this.cancelOrder.bind(this);
@@ -41,15 +42,18 @@ class OrderHistoryScreen extends Component {
         orderHistory['endDate'] = order.subscriptionEndDate;
         orderHistory['isActive'] = order.isActive;
         orderHistory['orderId'] = order.orderId;
+        orderHistory['orderAmount'] = order.orderAmount;
         orderHistorys.push(orderHistory);
     }
-    this.setState({products:products,user:user,orderHistorys:orderHistorys});
+    this.setState({products:products,user:user,orderHistorys:orderHistorys,orders:orders});
  }
  
   async cancelOrder(id){
-    var order =  _.find(this.state.orderHistorys, {orderId:id});
+    var orders = this.state.orders
+    var order =  _.find(orders, {orderId:id});
     order.isActive = false;
-    await addOrder(this.state.user.username,this.state.orderHistorys);
+    await addOrder(this.state.user.username,orders);
+    this.setState({"orders":orders});
   }
 
 
@@ -59,7 +63,7 @@ class OrderHistoryScreen extends Component {
         <FlatList
           data={this.state.orderHistorys}
           renderItem={({item}) => <OrderHistoryCard onPressFunction={this.cancelOrder} product={item} title={item.title} imageUrl={item.imageUrl} 
-              startDate = {item.startDate} endDate = {item.endDate} orderId = {item.orderId} isActive ={item.isActive}
+              startDate = {item.startDate} endDate = {item.endDate} orderId = {item.orderId} isActive ={item.isActive} orderAmount={item.orderAmount}
           />}
         />
       </View>

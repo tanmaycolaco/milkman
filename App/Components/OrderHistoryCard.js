@@ -9,11 +9,14 @@ export default class OrderHistoryCard extends Component {
       <Card
         title={this.props.title}
         image={{uri:this.props.imageUrl}}>
+        <View style={{marginTop:'1%'}}>
+            <Text style={{fontSize:18, fontFamily: 'sans-serif',color:"black"}} >Amount-   <Text style={{}}>{'\u20B9'} {this.props.orderAmount}</Text></Text>
+       </View>
        <View style={{marginTop:'1%'}}>
-            <Text style={{fontSize:15, fontFamily: 'sans-serif',color:"black"}} >Start Date :- {new Date(this.props.startDate).toDateString()}</Text>
+            <Text style={{fontSize:18, fontFamily: 'sans-serif',color:"black"}} >Start Date :- {new Date(this.props.startDate).toDateString()}</Text>
        </View>
        <View style={{marginTop:'1%', marginBottom:'1%'}}>
-            <Text style={{fontSize:15, fontFamily: 'sans-serif',color:"black"}} >End Date :- {new Date(this.props.endDate).toDateString()}</Text>
+            <Text style={{fontSize:18, fontFamily: 'sans-serif',color:"black"}} >End Date :- {new Date(this.props.endDate).toDateString()}</Text>
        </View>
        {this.props.isActive && new Date(this.props.endDate).getTime() > new Date().getTime() &&
                <Button
@@ -23,11 +26,11 @@ export default class OrderHistoryCard extends Component {
        }
 
        {!this.props.isActive &&
-                <View><Text>Subscription Cancelled</Text></View>
+                <View><Text style={{fontSize:18, fontFamily: 'sans-serif',color:"red", fontWeight:"bold"}} >Subscription Cancelled</Text></View>
         }
 
         {this.props.isActive && new Date(this.props.endDate).getTime() < new Date().getTime() &&
-               <View><Text>Subscription Ended successfully </Text></View>
+               <View><Text style={{fontSize:18, fontFamily: 'sans-serif',color:"green", fontWeight:"bold"}}>Subscription Ended successfully </Text></View>
         }
 
       </Card>
