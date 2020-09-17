@@ -29,14 +29,14 @@ class OrderScreen extends Component {
           isSelected:false
         },
         {
-          days:"07",
+          days:7,
           discountRate:10,
           subscriptionType:"weekly",
           subscriptionText:"Weekly (7 Days)",
           isSelected:false
         },
         {
-          days:"01",
+          days:1,
           discountRate:5,
           subscriptionType:"singleOrder",
           subscriptionText:"Single Order",

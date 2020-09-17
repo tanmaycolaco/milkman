@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { ScrollView, Text, KeyboardAvoidingView, View,FlatList,TouchableOpacity  } from 'react-native'
-import {Card,Image,CheckBox,Button } from 'react-native-elements';
+import {Card,Image,CheckBox,Button,Overlay } from 'react-native-elements';
 import { connect } from 'react-redux'
 import Toast from 'react-native-simple-toast';
+import {getOrders,addOrder} from '../Services/FirebaseService'
+import {retrieveData} from '../Services/AsyncStorageService'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -24,9 +26,19 @@ class PaymentScreen extends Component {
       quantity: quantity,
       subscriptionMode : subscriptionMode,
       orderAmount : orderAmount ,
+      overlayVisible : false,
+      subscriptionStartDate:"",
+      subscriptionEndDate:"",
     }
     this.setState({'orderAmount' : (this.state.subscriptionMode.days*this.state.quantity*this.state.selectedProduct.price)-((this.state.subscriptionMode.days*this.state.quantity*this.state.selectedProduct.price *this.state.subscriptionMode.discountRate)/100)})
+    this.orderProduct = this.orderProduct.bind(this);
+    this.navigateToProdctScreen = this.navigateToProdctScreen.bind(this);
   }
+
+  async componentDidMount() {
+    let user = await retrieveData("user");
+    this.setState({user:user});
+ }
 
   static navigationOptions = ({ navigation }) => {
       return {
@@ -34,16 +46,74 @@ class PaymentScreen extends Component {
     }
   }
 
+  
+  async orderProduct(){
+    let orders = await getOrders(this.state.user.username);
+    if(orders == null){
+      orders = new Array();
+    }
+    var orderDate = new Date();
+    var subscriptionStartDate = new Date(orderDate);
+    var subscriptionEndDate = new Date(orderDate);
+    subscriptionStartDate.setDate(orderDate.getDate()+1);
+    subscriptionEndDate.setDate(orderDate.getDate()+this.state.subscriptionMode.days);
+
+    var order = {
+      orderTime:new Date(),
+      productId:this.state.selectedProduct.id,
+      subscriptionStartDate : subscriptionStartDate.getTime(),
+      subscriptionEndDate : subscriptionEndDate.getTime(),
+      quantity: this.state.quantity,
+      orderAmount : this.state.orderAmount 
+    }
+    orders.push(order)
+    await addOrder(this.state.user.username,orders);
+    this.setState({subscriptionStartDate:subscriptionStartDate.toDateString(),subscriptionEndDate:subscriptionEndDate.toDateString(),overlayVisible:true })
+  }
+
+  navigateToProdctScreen(){
+     this.props.navigation.navigate('ProductScreen')
+  }
+
   render () {
     return (
       <ScrollView style={styles.container}>
         <KeyboardAvoidingView behavior='position'>
+          <Overlay isVisible={this.state.overlayVisible} style={{borderRadius:10}}>
+            <View style={{marginLeft:"5%", marginTop:"5%"}}>
+    <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Congratulations Subscription Started For {this.state.selectedProduct.title}</Text>
+            </View>
+            <View style={{marginLeft:"5%", marginTop:"5%", marginBottom: '20%'}}>
+                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Your subscription duration is from  {this.state.subscriptionStartDate} to {this.state.subscriptionEndDate} </Text>
+            </View>
+            <Button
+              icon={{
+                name: 'arrow-right',
+                type: 'font-awesome',
+                size: 15,
+                color: 'white',
+              }}
+              buttonStyle={{
+                marginBottom:30,
+                borderRadius:15,
+                width:'80%',
+                marginLeft:'10%',
+                height:60,
+                backgroundColor:'#F44336'
+              }}
+              onPress={() => this.navigateToProdctScreen()}
+              title="Back To Product "
+            />
+          </Overlay>
           <View style={{marginLeft:"5%"}}>
             <View style={{marginBottom:'6%', marginTop:'2%'}}>
-                <Text style={{fontSize:20, fontFamily: 'sans-serif',color:"black"}}>Your ordering {this.state.selectedProduct.title} with an subscription of {this.state.subscriptionMode.subscriptionText}</Text>
+                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}>Your ordering {this.state.selectedProduct.title} with an subscription of {this.state.subscriptionMode.subscriptionText}</Text>
             </View>
             <View>
-                <Text style={{fontSize:18, fontFamily: 'sans-serif',color:"black"}}>You will have to make an payment of  <Text style={{fontWeight:"bold"}}>{'\u20B9'}{this.state.orderAmount}</Text>  before your first delivery</Text>
+                <Text style={{fontSize:19, fontFamily: 'sans-serif',color:"black"}}> Payment for your subscription is <Text style={{fontWeight:"bold"}}>{'\u20B9'}{this.state.orderAmount}</Text></Text>
+            </View>
+            <View style={{ marginTop:'3%'}}>
+                <Text style={{fontSize:14, color:"red"}}>In case of cash on delivery payment should be made while accepting the first delivery</Text>
             </View>
             <View style={{paddingVertical:'2%',borderBottomWidth:0.6, marginTop:"5%", marginRight:"10%"}}>
               <View style={{}}>
@@ -73,7 +143,8 @@ class PaymentScreen extends Component {
               </View>
 
               <View>
-                <TouchableOpacity style={{paddingBottom:10,marginBottom:'4%', marginTop:'1%', borderBottomWidth:0.2,flex: 1,flexDirection: 'row', marginRight:'5%'}}>
+                <TouchableOpacity style={{paddingBottom:10,marginBottom:'4%', marginTop:'1%', borderBottomWidth:0.2,flex: 1,flexDirection: 'row', marginRight:'5%'}}
+                onPress={x => this.orderProduct()}>
                 <Image
                   source={{uri:"https://www.flaticon.com/premium-icon/icons/svg/2182/2182526.svg"}} 
                   style={{width: 60, height: 60, marginLeft:'5%'}} resizeMode="stretch"/>
